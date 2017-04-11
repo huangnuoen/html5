@@ -10,12 +10,6 @@ function getMyLocation() {
 		alert("no geolocation support");
 	}
 }
-function displayLocation(position) {
-	var latitude = position.coords.latitude;
-	var longitude = position.coords.longitude;
-	var div = document.getElementById("location");
-	div.innerHTML = "you are at latitude:" + latitude + ",longitude:" + longitude;
-}
 function displayError(error) {
 	var errorTypes = {
 		0: "unknown error",
@@ -48,7 +42,22 @@ function displayLocation(position) {
 	var longitude = position.coords.longitude;
 	var div = document.getElementById("location");
 	div.innerHTML = "you are at latitude:" + latitude + ", longitude: " + longitude;
+	
 	var km = computeDistance(position.coords, ourCoords);
 	var distance = document.getElementById("distance");
 	distance.innerHTML = "you are " + km + " km from the wickedlysmart hq";
+	showMap(position.coords);
+}
+var map;
+function showMap(coords){
+	//构建latlng对象
+	var googleLatAndLong = new google.maps.LatLng(latitude, longitude);
+	//地图选项
+	var mapOptions = {
+		zoom: 10,
+		center: googleLatAndLong,
+		mapTypeId: google.maps.MapTypeId.ROADMAP
+	}
+	var mapDiv = document.getElementById("map");
+	map = new google.maps.Map(mapDiv, mapOptions);
 }
