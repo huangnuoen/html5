@@ -1,3 +1,5 @@
+var map = null;
+var watchId = null;
 var ourCoords = {
 	latitude: 47.624851,
 	longitude: -122.52099
@@ -5,7 +7,10 @@ var ourCoords = {
 window.onload = getMyLocation;
 function getMyLocation() {
 	if(navigator.geolocation) {
-		navigator.geolocation.getCurrentPosition(displayLocation, displayError);
+		var watchButton = document.getElementById("watch");
+		watchButton.onclick = watchLocation;
+		var clearWatchButton = document.getElementById("clearWatch");
+		clearWatchButton.onclick = clearWatch;
 	} else {
 		alert("no geolocation support");
 	}
@@ -42,16 +47,17 @@ function displayLocation(position) {
 	var longitude = position.coords.longitude;
 	var div = document.getElementById("location");
 	div.innerHTML = "you are at latitude:" + latitude + ", longitude: " + longitude;
-	
+	div.innerHTML += "(with " + position.coords.accuracy + "meters accuracy)";
+
 	var km = computeDistance(position.coords, ourCoords);
 	var distance = document.getElementById("distance");
 	distance.innerHTML = "you are " + km + " km from the wickedlysmart hq";
-	showMap(position.coords);
+	if(map == null) {showMap(position.coords);}
 }
-var map;
+
 function showMap(coords){
 	//构建latlng对象
-	var googleLatAndLong = new google.maps.LatLng(latitude, longitude);
+	var googleLatAndLong = new google.maps.LatLng(coords.latitude, coords.longitude);
 	//地图选项
 	var mapOptions = {
 		zoom: 10,
@@ -60,4 +66,35 @@ function showMap(coords){
 	}
 	var mapDiv = document.getElementById("map");
 	map = new google.maps.Map(mapDiv, mapOptions);
+	var title = "your location";
+	var content = "you are here:" + coords.latitude + ", " + coords.longitude;
+	addMarker(map, googleLatAndLong, title, content);
+}
+function addMarker(map, latlong, title, content) {
+	var markerOptions = {
+		position: latlong,//当前位置信息
+		map: map,
+		title: title,
+		clickable: true
+	};
+	//构建标记，传入创建的markeroptions的信息
+	var marker = new google.maps.Marker(markerOptions);
+	//定义新窗口
+	var infoWindowOptions = {
+		content: content,
+		position: latlong
+	};
+	var infoWindow = new google.maps.InfoWindow(infoWindowOptions);
+	google.maps.event.addListener(marker, "click", function() {
+		infoWindow.open(map);
+	});
+}
+function watchLocation() {
+	watchId = navigator.geolocation.watchPosition(displayLocation, displayError, {enableHighAccuracy: true, timeout: 100, maximumAge: 0});
+}
+function clearWatch() {
+	if(watchId) {
+		navigator.geolocation.clearWatch(watchId);
+		watchId = null;
+	}
 }
