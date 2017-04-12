@@ -90,7 +90,7 @@ function addMarker(map, latlong, title, content) {
 	});
 }
 function watchLocation() {
-	watchId = navigator.geolocation.watchPosition(displayLocation, displayError, {enableHighAccuracy: true, timeout: 100, maximumAge: 0});
+	watchId = navigator.geolocation.watchPosition(displayLocation, displayError);
 }
 function clearWatch() {
 	if(watchId) {
