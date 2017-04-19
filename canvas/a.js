@@ -1,6 +1,7 @@
 window.onload = function() {
 	var button = document.getElementById("previewButton");
 	button.onclick = previewHandler;
+	makeImage();
 }
 function previewHandler() {
 	var canvas = document.getElementById("tshirtCanvas");
@@ -85,5 +86,12 @@ function drawBird(canvas, context) {
 	twitterBird.src = "twitterBird.png";
 	twitterBird.onload = function() {
 		context.drawImage(twitterBird, 20, 120, 70, 70);
+	};
+}
+//保存画布
+function makeImage() {
+	var canvas = document.getElementById("tshirtCanvas");
+	canvas.onclick = function() {
+		window.location = canvas.toDataURL("image/png");
 	};
 }
